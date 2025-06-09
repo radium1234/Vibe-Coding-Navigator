@@ -17,7 +17,7 @@
 
 `Vibe Coding Navigator`希望能通过规则驱动，来确保AI开发过程的可控性、可靠性和高质量
 
-### AI原生架构设计规则 (AI-Native Architecture)
+### 0. AI原生架构设计规则 (AI-Native Architecture)
 
 我们要求AI在实现任何功能之前，自主完成架构设计，同时架构需要符合**AI原生**的理念。这意味着在技术选型、模块划分、接口设计上，会优先考虑那些便于AI理解、操作和扩展的模式。
 
