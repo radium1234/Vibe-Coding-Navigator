@@ -1,6 +1,12 @@
 # Vibe Coding Navigator ———— Rules is all you need
 
-## 引言
+## 使用说明
+
+VIBE_RULES_LOCAL.md 是只专注于本地任务开发的版本，需要人工审批方案，当AI无法处理故障时会上报给人类。在设计时考虑的在各种任务（但是只限Python和Typescript语言）的通用性，可以直接上手使用（推荐）。
+VIBE_RULES_LOCAL_AUTONOMOUS.md 也是只专注于本地任务开发的版本，但是是全自动化版本，当AI无处处理故障时会自主对方案进行重构。
+LLM_RULES.md 是专为需要调用云端api的LLM应用专门增加的规则，只根据本人开发习惯写的，建议使用前先阅读。
+
+## 项目介绍
 
 `Vibe Coding Navigator` 不是一个软件工具，而是一套为AI原生开发流程量身定制的`System Prompt`（在Cursor软件中可以作为`Cursor Rules`）。它旨在探索一种全新的软件开发范式：通过在System Prompt中设定清晰、严格的一系列规则，使得AI能够实现全程托管，从零开始构建完整项目，实现真正意义上的"无人类代码"开发，同时交付的代码是可控、可靠和高质量的。人类开发者可以从繁琐的编码工作中解放出来。
 
