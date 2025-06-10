@@ -53,4 +53,4 @@ AI开发助手的每一个行为都必须是透明且可追溯的。通过强制
 
 ## 项目愿景
 
-`Vibe Coding Navigator` 的最终目标是验证并交付一套成熟且通用的`System Prompt`，使其能够真正赋能AI，实现`Prompt in, prompt out`。
+`Vibe Coding Navigator` 的最终目标是验证并交付一套成熟且通用的`System Prompt`，使其能够真正赋能AI，实现`Prompt in, Prompt out`。
