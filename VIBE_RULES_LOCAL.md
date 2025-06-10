@@ -1,45 +1,74 @@
-# **Vibe Coding Navigator - AI Development Rules**
+# Vibe Coding Navigator - AI Development Framework
 
-## **Core Principles**
+This document outlines the framework governing this AI-driven development project. It is structured as a pyramid: from high-level core principles to specific technical blueprints. The AI assistant must adhere to these rules to ensure quality, consistency, and alignment with project goals.
 
-As an AI Development Assistant, my objective is to execute fully autonomous software development with zero human coding intervention, ensuring all generated code is controllable, reliable, and of high quality. I will strictly adhere to the following processes and standards.
+---
 
-## **1. Project Management & Tracking**
+## 1. Core Principles (The "Why")
 
-I will manage the project by maintaining the following documents, located within the `/docs` directory:
+These are the foundational, non-negotiable principles that guide all local development decisions.
 
-*   **`docs/PROGRESS.md`**: The central progress tracking file using a Markdown task list.
-    *   **Format**:
-        ```markdown
-        # Project Progress
-        ## Module Name
-        - [ ] Target 1
-        - [ ] Target 2 #in-progress
-        - [x] Target 3
-        ```
-    *   **Responsibility**: Before starting any task, I must read this file to identify the next un-checked target. Upon completion, I must update the checkbox to `[x]`. I will mark the currently active task with an `#in-progress` tag.
+*   **AI-Native Philosophy**: My objective is to execute fully autonomous software development with zero human coding intervention, ensuring all generated code is controllable, reliable, and of high quality.
+*   **Test-Driven Development (TDD) is Mandatory**: All functionality must be driven by tests. No production code is written before a failing test.
+*   **Strict Decoupling**: Configuration values and secrets (like API keys) must be strictly decoupled from application logic. Hardcoding is forbidden.
+*   **Security First**: Sensitive information (API keys, passwords) must not be committed to the code repository.
+*   **Fail-Fast Protocol**: Encountering any unexpected error must lead to an immediate halt and explicit exception. Silent fails or returning default values on error are forbidden.
 
-*   **`docs/SYSTEM_DESIGN.md`**: The high-level system design document.
-    *   **Content**: System architecture diagrams (generated using Mermaid), module breakdown and dependencies, technology stack, and core API contracts.
-    *   **Timing**: Must be completed before any implementation begins.
+---
 
-*   **`docs/MODULE_[name]_DESIGN.md`**: The detailed design document for each module.
-    *   **Content**: Detailed functional descriptions for each target, API definitions (inputs/outputs), data structures, and internal dependencies.
-    *   **Timing**: Must be completed before the development of a module begins, primarily for human review.
+## 2. Development Workflow (The "How")
 
-*   **`docs/TEST_PLAN.md`**: The consolidated testing plan.
-    *   **Content**: All unit and integration test cases for every target. Must explicitly state the coverage goal (e.g., ≥90%).
+This section defines the step-by-step processes for design, implementation, and maintenance.
 
-*   **`docs/INCIDENTS.md`**: A logbook for recording all automated healing events.
-    *   **Content**: For every auto-fix, an entry detailing the problem, the root cause analysis, the applied solution, and the verification result.
+### 2.1. Task Management
+*   All work is tracked via a Markdown task list in `docs/PROGRESS.md`.
+*   I will select an unchecked `[ ]` target, mark it with `#in-progress`, and upon completion, mark it as complete `[x]`.
 
-## **2. Project Structure**
+### 2.2. Design & Approval Workflow
+*   High-level system design is documented in `docs/SYSTEM_DESIGN.md`.
+*   Detailed module design is documented in `docs/MODULE_[name]_DESIGN.md`.
+*   **Approval Gates**: I must halt execution and explicitly request human approval at the following project milestones:
+    1.  After completing the initial `docs/SYSTEM_DESIGN.md`.
+    2.  After completing the `docs/MODULE_[name]_DESIGN.md` for any new, significant module.
+    3.  Before executing a major infrastructure change or a significant data migration plan.
 
-I will generate and maintain the project using the following standardized directory structure:
+### 2.3. Implementation Cycle (TDD)
+I will strictly follow this cycle for every target:
+1.  **Select Target**: Choose an unchecked target from `docs/PROGRESS.md`.
+2.  **Write Tests (Test-First)**: Write complete, isolated tests. All tests against external services must use live connections.
+3.  **Run Tests (Red)**: Execute the tests and confirm they fail as expected because the feature is not yet implemented.
+4.  **Write Code (Green)**: Write the minimum amount of code required to make the tests pass.
+5.  **Refactor**: Improve the code's structure and readability without changing its external behavior (all tests must remain green).
+6.  **Update Progress**: Mark the target as complete in `docs/PROGRESS.md`.
+7.  **Integration Tests**: When all of a module's targets are complete, execute its integration tests.
 
+### 2.4. Automated Healing Protocol
+When an error is encountered, I will:
+1.  **Detect**: Identify the error or test failure.
+2.  **Analyze**: Parse the full error message, stack trace, and relevant code.
+3.  **Heal**: Isolate the root cause and patch the code.
+4.  **Verify**: Re-run relevant tests to confirm the fix is effective.
+5.  **Log**: Record the incident in `docs/INCIDENTS.md`.
+
+### 2.5. Escalation Policy
+I must halt execution and escalate the issue to the human developer for guidance under the following conditions:
+1.  **Repetitive Failures**: After **3** consecutive failed attempts to fix the same failing test or bug.
+2.  **Dependency Conflicts**: When a core dependency introduces a breaking change that causes cascading failures across multiple modules.
+3.  **Ambiguous Requirements**: When the implementation for a target cannot be clearly derived from the design documents.
+
+---
+
+## 3. Technical Blueprint (The "What")
+
+This section defines the concrete technical choices and structures for the project.
+
+### 3.1. Project Structure
 ```
 /
+|-- .cursor/
+|   |-- rules.mdc
 |-- docs/
+|   |-- adrs/
 |   |-- INCIDENTS.md
 |   |-- MODULE_[name]_DESIGN.md
 |   |-- PROGRESS.md
@@ -53,77 +82,45 @@ I will generate and maintain the project using the following standardized direct
 |-- tests/
 |   |-- test_module_a/
 |   |   |-- test_feature_x.py
+|-- .env.template
 |-- .gitignore
 |-- README.md
-|-- requirements.txt   # Or package.json, etc.
-|-- VIBE_RULES.md
+|-- pyproject.toml
+|-- requirements.txt   # Generated by uv
 ```
+*   `/docs`: Contains all project management, design, and incident-log documents, including Architecture Decision Records (ADRs) in a dedicated `/adrs` subdirectory.
+*   `/src`: Contains all production source code.
+*   `/tests`: Contains all test code, mirroring the `/src` directory structure.
 
-*   **`/docs`**: Contains all project management, design, and incident-log documents.
-*   **`/src`**: Contains all production source code, organized by feature modules.
-*   **`/tests`**: Contains all test code, mirroring the `/src` directory structure.
-
-## **3. Technology Stack & Configuration**
-
-To ensure code quality and predictability, the following technology constraints are mandatory.
-
-*   **Language Policy**: The project must be implemented exclusively in either **TypeScript** or **Python**. The chosen language must be used consistently throughout the project.
-
+### 3.2. Technology Stack
+*   **Language Policy**: The project must be implemented in either **TypeScript** or **Python**.
+*   **Environment & Tooling Configuration**:
+    *   **Docker**: Must use the Alibaba Cloud ACR mirror. Base images must come from the `registry.cn-hangzhou.aliyuncs.com` registry.
+    *   **Python (`uv`)**: Must use the Alibaba Cloud PyPI mirror: `https://mirrors.aliyun.com/pypi/simple/`.
+    *   **TypeScript (`npm` or `yarn`)**: Must use the Taobao mirror: `https://registry.npmmirror.com`.
 *   **TypeScript Configuration**:
-    *   **Dependency Management**: Use `package.json` with `npm`. All dependencies must have explicitly versioned (e.g., `"react": "18.2.0"`).
-    *   **Compiler Options**: A `tsconfig.json` file must be present at the root. The `compilerOptions` **must** include `"strict": true` to enforce the strongest type-checking.
-    *   **Linting & Formatting**: The project must be configured with ESLint (using `@typescript-eslint/parser`) and Prettier to maintain a consistent and high-quality codebase.
-
+    *   **Dependency Management**: Use `package.json`. Dependencies must have explicitly pinned versions.
+    *   **Compiler Options**: `tsconfig.json` must include `"strict": true`.
+    *   **Linting & Formatting**: Use ESLint and Prettier.
 *   **Python Configuration**:
-    *   **Dependency Management**: Use of `pyproject.toml` with a modern tool like **Poetry** or **PDM** is strongly preferred for managing dependencies and virtual environments.
-    *   **Installer**: **`uv`** should be used as the primary tool for installing packages and managing virtual environments.
-    *   **Type Hinting**: All function definitions (parameters and return types) and variable declarations **must** include type hints as defined in PEP 484.
-    *   **Static Type Checking**: **Mypy** must be used for static analysis. Its configuration (e.g., `pyproject.toml`) **must** be set to a strict level (e.g., including `disallow_untyped_defs = True`).
-    *   **Linting & Formatting**: The project must be configured with **Black** for automated code formatting and a linter like **Ruff**.
+    *   **Dependency Management**: Use `uv` for all dependency and environment management, following the declare-lock-sync workflow.
+    *   **Type Hinting**: All function definitions and variables must include type hints.
+    *   **Static Type Checking**: Use **Mypy** with a strict configuration (`disallow_untyped_defs = True`).
+    *   **Linting & Formatting**: Use **Black** and **Ruff**.
 
-## **4. TDD (Test-Driven Development) Workflow**
+---
 
-I will strictly follow the TDD workflow for every target listed in `docs/PROGRESS.md`:
+## 4. Quality & Documentation Standards (The "How Well")
 
-1.  **Select Target**: Choose an unchecked `[ ]` target from `docs/PROGRESS.md` and mark it with `#in-progress`.
-2.  **Write Tests (Test-First)**:
-    *   Write complete and isolated test cases for the selected target.
-    *   **No-Mocking Policy**: All tests against external services (e.g., LLM APIs, databases, third-party APIs) **must use live, real connections**. Mocking or stubbing is strictly forbidden.
-    *   Test code must be created before implementation code.
-3.  **Run Tests (Red)**: Execute the tests and confirm they fail as expected because the feature is not yet implemented.
-4.  **Write Code (Green)**: Write the minimum amount of code required to make the failing tests pass.
-5.  **Refactor**: Improve the code's structure, readability, and performance without changing its external behavior (all tests must remain green).
-6.  **Update Progress**: Remove the `#in-progress` tag and mark the target as complete `[x]` in `docs/PROGRESS.md`.
-7.  **Integration Tests**: When a module's targets are complete, execute its integration tests.
+This section defines the standards for code quality and project documentation.
 
-## **5. Code Quality & Standards**
-
-All code I generate must conform to these standards:
-
-*   **Naming Conventions**: Descriptive names are mandatory. Adhere to language-specific conventions (e.g., `snake_case` for Python, `camelCase` for TypeScript).
-*   **Documentation**: All functions and classes must have comprehensive docstrings/JSDoc, explaining their purpose, parameters, return values, and potential exceptions.
-*   **Error Handling (Fail-Fast Protocol)**:
-    *   **No Silent Fails**: Never suppress an error by using an empty `catch` block or returning a default value.
-    *   **Propagate Exceptions**: All exceptions must be thrown upwards or wrapped in a more specific, high-level exception before being re-thrown.
-    *   **Rich Context**: Exceptions must contain sufficient context to facilitate debugging.
-
-## **6. AI-Native Architecture Principles**
-
-The system architecture I design will follow these principles:
-
-*   **High Cohesion, Loose Coupling**: Achieve modularity through clear interfaces and dependency injection.
-*   **Self-Explanatory Code**: Prioritize readability and clarity through descriptive naming and type annotations, making the code itself the primary source of truth.
-*   **Contract-Driven Development**: Define service interactions using formal specifications like OpenAPI/Swagger or JSON Schema.
-
-## **7. Automated Healing Protocol**
-
-When I encounter an error during execution or testing, I will initiate the following protocol:
-
-1.  **Detect**: Identify the error or test failure.
-2.  **Analyze**: Parse the full error message, stack trace, and relevant code.
-3.  **Heal**: Isolate the root cause and patch the code.
-4.  **Verify**: Re-run the relevant tests to confirm the fix is effective and has not introduced regressions.
-5.  **Log**: Record the incident in `docs/INCIDENTS.md`, detailing the analysis and solution.
+*   **Architecture Decision Records (ADRs)**: For significant technology or architectural choices, a concise ADR must be created in `/docs/adrs` to document the context and reasoning. These are records of decisions and do not require a separate approval gate.
+*   **Secret Management**: Secrets must be managed via a `.env` file, which must be listed in `.gitignore`. A `.env.template` file must be maintained in the repository.
+*   **Runtime Contract Enforcement**: All data from external sources must be validated at runtime (Pydantic for Python, Zod for TypeScript).
+*   **Naming Conventions**: Must use descriptive names and adhere to language-specific conventions.
+*   **Documentation**: All functions and classes must have comprehensive docstrings/JSDoc.
+*   **Test Plan**: A `test_plan.md` must be maintained, outlining test cases and aiming for ≥90% coverage per target.
+*   **AI-Native Principles**: The architecture must strive for High Cohesion/Loose Coupling, Self-Explanatory Code, and Contract-Driven Development.
 
 ---
 **This rule set is now active. I will follow these instructions for all development tasks.** 
